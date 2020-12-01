@@ -1,11 +1,17 @@
 module Day1 where
 
-getWords :: FilePath -> IO [Int]
-getWords path = do contents <- readFile path
+
+getLines :: FilePath -> IO [Int]
+getLines path = do contents <- readFile path
                    return (map (read :: String -> Int) (lines contents))
 
-expense_report = getWords "input"
+expense_report = getLines "input"
 
-part1 (x : xs) = if elem (2020 - x) xs then x * (2020-x) else part1 xs
+part1 :: [Int] -> Int
+part1 xs = head [ x * y| x <- xs, y <- xs, x + y == 2020]
 
-ans1 = fmap part1 expense_report
+part2 :: [Int] -> Int
+part2 xs = head [ x * y * z| x <- xs, y <- xs, z <- xs, x + y + z == 2020]
+
+part1ans = fmap part1 expense_report
+part2ans = fmap part2 expense_report
