@@ -9,8 +9,28 @@ getMinMax txt =
     in
         (min,max)
 
-filterValidPwds :: [String] -> Int
-filterValidPwds = Prelude.foldl (\acc ele -> if isValidPwd ele then acc + 1 else acc) 0
+part1a :: Int -> Int -> String -> Char -> Bool
+part1a min max password charToCheck =
+    let 
+        count = Prelude.length (Prelude.filter (\x -> x == charToCheck) password)
+    in
+        count >= min && count <= max
+
+part2a :: Int -> Int -> String -> Char -> Bool
+part2a min max password charToCheck = 
+    let
+        t1 = password !! (min - 1) == charToCheck 
+        t2 = password !! (max - 1) == charToCheck
+        myxor :: Bool -> Bool -> Bool
+        myxor True False = True
+        myxor False True = True
+        myxor _ _ = False
+    in
+        myxor t1 t2
+
+
+filterValidPwds :: (Int -> Int -> String -> Char -> Bool) ->[String] -> Int
+filterValidPwds day2Func = Prelude.foldl (\acc ele -> if isValidPwd ele then acc + 1 else acc) 0
     where 
         isValidPwd :: String -> Bool
         isValidPwd pwd =
@@ -21,14 +41,13 @@ filterValidPwds = Prelude.foldl (\acc ele -> if isValidPwd ele then acc + 1 else
                 max = snd minMaxTuple
                 charToCheck = Prelude.head (T.unpack (Prelude.head (T.splitOn (T.pack ":") (Prelude.head (Prelude.tail splitText)))))
                 password = T.unpack (Prelude.head (Prelude.tail (Prelude.tail splitText)))
-                count_of_chars = Prelude.length (Prelude.filter (\x -> x == charToCheck) password)
             in
-                count_of_chars >= min && count_of_chars <= max
+                day2Func min max password charToCheck
             
 
 main :: IO ()
 main = do
     contents <- readFile "input.txt"
     let lst = Prelude.lines contents
-    let filteredList = filterValidPwds lst
-    putStrLn (show filteredList)
+    putStrLn (show (filterValidPwds part1a lst))
+    putStrLn (show (filterValidPwds part2a lst))
