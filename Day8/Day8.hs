@@ -35,7 +35,7 @@ day8p2 xs = go xs xs [] 0 0 0
     where
         go origCodeList modifiedCodeList seenLines currLine acc flipLoc
             | currLine `elem` seenLines =
-                go origCodeList (flipInstruction flipLoc origCodeList) [] 0 0 flipLoc + 1
+                go origCodeList (flipInstruction flipLoc origCodeList) [] 0 0 (flipLoc + 1)
             | currLine == length origCodeList = acc
             | otherwise = 
                 let
@@ -50,7 +50,7 @@ day8p2 xs = go xs xs [] 0 0 0
 flipInstruction :: Int -> [Code] -> [Code]
 flipInstruction count = go 0
     where
-        go :: Int -> [Code] -> [Code]
+        --go :: Int -> [Code] -> [Code]
         go _ [] = []
         go idx (x:xs)
             | idx == count = flipCode x : xs
