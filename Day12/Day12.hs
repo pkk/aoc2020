@@ -4,7 +4,6 @@ data Direction = East Int | West Int | Noth Int | South Int deriving (Show)
 main :: IO ()
 main = do
     directions <- map parseAction . lines <$> readFile "input.txt"
-    print $ directions !! 0
     print $ manhattanDistance $ navigateShip directions
     print $ manhattanDistance $ navigateShipWaypoint directions
 
@@ -84,9 +83,6 @@ guideShip ship (action, amount) = do
             }
 
 type Waypoint = (Int,Int)
-
-startWaypoint :: Waypoint
-startWaypoint = (10,1)
 
 guideShipWayPoint
   :: (Ship, Waypoint)
