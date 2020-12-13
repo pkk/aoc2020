@@ -1,7 +1,9 @@
+import Data.List.Split
+
 main = do
     input <- lines <$> readFile "input.txt"
     let timestamp = (read :: String -> Int) (input !! 0)
-    let busIds = map (read :: String -> Int) $ filter (\x -> x /= "x") $ splitOn (input !! 1) ','
+    let busIds = map (read :: String -> Int) $ filter (\x -> x /= "x") $ splitOn "," (input !! 1)
     let minWaitTimeLst = findEarliestBus busIds timestamp
     let minWaitTime = minimum minWaitTimeLst
     print $ day13p1 minWaitTime minWaitTimeLst busIds
@@ -22,9 +24,10 @@ findEarliestBus xs y = map func xs
             then 0
             else (x - (mod y x)) 
 
-splitOn :: String -> Char -> [String]
-splitOn xs c = go xs c [] []
-go [] c acc out = reverse acc:out
-go (x:ys) c acc out
-    | x == c = go ys c [] (reverse acc:out)
-    | otherwise = go ys c (x:acc) out
+--Data.List.Split.SplitOn offer similar functionality
+--splitOn :: String -> Char -> [String]
+--splitOn xs c = reverse $ go xs c [] []
+--go [] c acc out = reverse acc:out
+--go (x:ys) c acc out
+--    | x == c = go ys c [] (reverse acc:out)
+--    | otherwise = go ys c (x:acc) out
