@@ -9,9 +9,7 @@ main = do
     p1 <- run "input.txt"
     p2 <- run "input_p2.txt"
     print $ "Day19 P1 : " ++ show p1
-    --putStrLn $ "part 1: " ++ show p1
     print $ "Day19 P2 : " ++ show p2
-    --putStrLn $ "part 2: " ++ show p2
 
 run :: String -> IO (Int)
 run file = do
