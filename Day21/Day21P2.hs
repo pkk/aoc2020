@@ -18,10 +18,8 @@ main :: IO ()
 main = do
     input <- splitAndReadFile "input.txt" "\n"
     let allergyMap =  run M.empty input
-    let allIngredients = nub $ concat $ map ingredients input
-    let potentialIngredients = nub $ concat $ (M.elems allergyMap)
-    let safeIngredients = filter (\i -> not (i `elem` potentialIngredients)) allIngredients
-    print $ length $ filter (`elem` safeIngredients) $ concat $ map ingredients input
+    let final = concat $ intersperse "," (map snd (sort $ run2 allergyMap))
+    putStrLn final
 
 run :: M.Map String [String] -> [Food] -> M.Map String [String]
 run a2f ((Food ingredients allergens):foods) = run (updateMap a2f ingredients allergens) foods
@@ -33,6 +31,15 @@ run a2f ((Food ingredients allergens):foods) = run (updateMap a2f ingredients al
             in updateMap updated ingredients allergens
           updateMap a2f ingredients [] = a2f
 run a2f _ = a2f
+
+run2 :: M.Map String [String] -> [(String, String)]
+run2 a2f = run' a2f (M.toList a2f)
+    where run' full ((allergen, foods):a2f) = 
+           case foods of
+            food:[] -> (allergen, food) : (run2 $ M.map (filter (/= food)) full)
+            _ -> run' full a2f
+          run' full [] = []
+
 
 splitFile :: String -> String -> IO [String]
 splitFile name splitter = do
