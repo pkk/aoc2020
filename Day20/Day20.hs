@@ -46,67 +46,6 @@ main = do
     let corners = filter ((== 2) . length . snd) neighbors
     print $ product $ map (index . fst) corners
 
-
-findSeaMonsters :: Grid -> Int
-findSeaMonsters grid = length $ filter (\(x, y) -> seaMonsterAt (x, y) grid) [(x, y) | x<-[0..size grid], y <- [0..size grid]]
-
-seaMonsterAt :: (Int, Int) -> Grid -> Bool
-seaMonsterAt (x, y) (Grid _ f) =
-    let h (a, b) = f (x+a, y+b) == Hash
-    in and $ map (\(x', y') -> h (x', y')) seaMonsterCoords
-
-getBigGrid :: [[Grid]] -> Grid
-getBigGrid matrix = Grid 1337 (\(x, y) -> 
-    let gx = x `div` 8
-        gy = y `div` 8
-        x' = x `mod` 8
-        y' = y `mod` 8
-    in if gx < 0 || gy < 0 || gx >= length matrix || gy >= length matrix then Outside else func ((matrix !! gy) !! gx) (x'+1, y'+1))
-
-getFullGrid :: (Grid, [Grid]) -> [(Grid, [Grid])] -> [[Grid]]
-getFullGrid (topRCorner, neighbors) other = 
-    let right = head neighbors
-        down = neighbors !! 1
-        aligned = alignFirst topRCorner right down
-    in (aligned : getFullRow (alignTo right aligned) other) : (getFullGrid' (alignTo down aligned) other)
-
-
-getFullRow :: Grid -> [(Grid, [Grid])] -> [Grid]
-getFullRow aligned other = 
-    let neighbors = get other aligned
-        rightEdge = getEdge R aligned
-        neighborToRight = filter (\grid -> rightEdge `elem` concat (map allEdges (allChoices grid))) neighbors
-    in if length neighborToRight /= 1 then [aligned] else aligned : getFullRow (alignTo (head neighborToRight) aligned) other 
-
-getFullGrid' :: Grid -> [(Grid, [Grid])] -> [[Grid]]
-getFullGrid' aligned other =
-    let neighbors = get other aligned
-        row = getFullRow aligned other 
-        bottomEdge = getEdge D aligned
-        neighborsDown = filter (\grid -> bottomEdge `elem` concat (map allEdges (allChoices grid))) neighbors
-    in if length neighborsDown /= 1 then [row] else row : getFullGrid' (alignTo (head neighborsDown) aligned) other
-
-get :: [(Grid, [Grid])] -> Grid -> [Grid]
-get ((g',ns):gs) g
-    | g' == g = ns
-    | otherwise = get gs g
-
-alignTo :: Grid -> Grid -> Grid
-alignTo toAlign target = 
-    let possibleAlignments = allChoices toAlign
-    in  head $ filter (\alignment -> areAligned alignment target) possibleAlignments
-
-areAligned :: Grid -> Grid -> Bool
-areAligned g1 g2 = getEdge U g1 == getEdge D g2 || getEdge L g1 == getEdge R g2 || getEdge R g1 == getEdge L g2 || getEdge D g1 == getEdge U g2
-
-alignFirst :: Grid -> Grid -> Grid -> Grid
-alignFirst toAlign targetR targetD = 
-    let possibleTargetsR = map (getEdge L) (allChoices targetR)
-        possibleTargetsD = map (getEdge U) (allChoices targetD)
-    in head $ filter (\x -> (getEdge R x) `elem` possibleTargetsR && (getEdge D x) `elem` possibleTargetsD) (allChoices toAlign)
-
-
-
 getNeighbors :: [Grid] -> Grid -> [Grid]
 getNeighbors grids grid = filter (\g -> grid /= g && isNeighbor g grid) grids
 
