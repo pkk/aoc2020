@@ -44,7 +44,12 @@ main = do
     input <- splitAndReadFile "input.txt" "\n\n"
     let neighbors = map (\g -> (g, getNeighbors input g)) input
     let corners = filter ((== 2) . length . snd) neighbors
-    print $ product $ map (index . fst) corners
+    let gridOfGrids = getFullGrid (head corners) neighbors
+    let bigGrid = getBigGrid gridOfGrids
+    let seaMonsterPotentials = map findSeaMonsters (allChoicesGeneric bigGrid)
+    let numberOfHashes = length $ filter (== '#') (show bigGrid)
+    let maxSeaMonsters = head $ filter (/= 0) seaMonsterPotentials
+    print $ numberOfHashes - maxSeaMonsters*(length seaMonsterCoords)
 
 
 findSeaMonsters :: Grid -> Int
