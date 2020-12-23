@@ -9,8 +9,6 @@ main = do
     (p1:p2:[]) <- splitFile "input.txt" "\n\n"
     let f p = (map read) $ tail $ filter (/= "") (splitOn "\n" p) :: [Int]
     let (deck1, deck2) = (f p1, f p2)
-    --let winningDeck = play deck1 deck2
-    --print $ score winningDeck
     let (winningDeck2, _) = play2 deck1 deck2
     print $ score winningDeck2
 
